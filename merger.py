@@ -1,6 +1,7 @@
 import os
 import argparse
 import shutil
+import glob
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_dir", help="Input directory")
@@ -13,14 +14,16 @@ if not os.path.isdir(args.input_dir):
 for path in os.listdir(args.input_dir):
     if path.startswith(".") or os.path.isfile(args.input_dir + "/" + path):
         continue
-    cfg_file = args.input_dir + "/" + path + "/config.lua.def"
-    if not os.path.isfile(cfg_file):
-        print("%s does not exist. Skipping..." % cfg_file)
-        continue
 
-    path_file_path = args.input_dir + "/" + path + "/path.txt"
-    with open(path_file_path, "r") as path_file:
-        pathtxt = path_file.read()
-        pathtxt = pathtxt.replace(".", "")
-        destination = os.getcwd() + "/" + pathtxt
-        shutil.copy(cfg_file, destination)
+    for deffile in glob.glob("*.def"):
+        cfg_file = args.input_dir + "/" + path + "/" + deffile
+        if not os.path.isfile(cfg_file):
+            print("%s does not exist. Skipping..." % cfg_file)
+            continue
+
+        path_file_path = args.input_dir + "/" + path + "/path.txt"
+        with open(path_file_path, "r") as path_file:
+            pathtxt = path_file.read()
+            pathtxt = pathtxt.replace(".", "")
+            destination = os.getcwd() + "/" + pathtxt
+            shutil.copy(cfg_file, destination)
